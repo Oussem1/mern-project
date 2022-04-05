@@ -1,6 +1,6 @@
 - [ ] User management solution
-    - [ ] Create, Read, Update, Delete user
-    - [ ] User is at least {id, email, pseudo, password, isAdmin}
+    - [x] Create, Read, Update, Delete user
+    - [x] User is at least {id, email, pseudo, password, isAdmin}
     - [ ] You can read information about all users (except the password) if logged
     - [ ] You can create a new user even without being logged
     - [ ] You can only update yourself (other users cannot update you EXCEPT if admin)
