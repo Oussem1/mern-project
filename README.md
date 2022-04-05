@@ -11,13 +11,16 @@
   - [ ] All Write endpoints need the request to be authenticated (stateless)
 - [ ] A rover endpoint
   - [ ] List all rovers and allow you to sort rover by date, name with a limit (default limit is 10 but can be changed with a parameter)
-  - [ ] Create, Read, Update, Delete rover
-  - [ ] Rover is at least {id, name, launch_date, construction_date, constructor, image}. When a rover is created you need to check the size of the image and resize it if needed (200*200px)
+  - [x] Create, Read, Update, Delete rover
+  - [x] Rover is at least {id, name, launch_date, construction_date, constructor, image}.
+    - [ ] Change constructor by something else
+    - [ ] When a rover is created you need to check the size of the image and resize it if needed (200*200px)
   - [ ] Only an admin can delete a rover
 - [ ] A mission endpoint
   - [ ] List all missions and allow you to sort mission by dates, name, country
-  - [ ] Create, Read, Update, Delete mission
-  - [ ] Mission is at least {id, country, start_date, end_date, rovers}. A mission can use multiples rovers BUT a rover cannot be in two missions at a time
+  - [x] Create, Read, Update, Delete mission
+  - [x] Mission is at least {id, country, start_date, end_date, rovers}. A mission can use multiples rovers
+    - [ ] BUT a rover cannot be in two missions at a time
   - [ ] Only an admin OR the mission author can delete a mission
 - [ ] It is important to provide good feedback to the users using the API so you will need to implement a simple type solution/validation like Joi or Yup or AJV
 - [ ] On the same note, you need to use the valid HTTP code when returning information to the user
