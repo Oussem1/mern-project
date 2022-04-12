@@ -5,7 +5,10 @@ const RoverSchema = new mongoose.Schema({
     launch_date : String,
     construction_date: String,
     constructor: String,
-    image: String
+    image: {
+        type: String,
+        required: false
+    }
 })
 
 module.exports = mongoose.model('Rover', RoverSchema);

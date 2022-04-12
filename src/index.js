@@ -1,51 +1,72 @@
 const express = require('express');
+require('dotenv').config();
 const mongoose = require('mongoose');
-const userController = require('./controllers/users')
-const roverController = require('./controllers/rovers')
-const missionController = require('./controllers/missions')
+const userRoute = require('./routes/users')
+const authRoute = require('./routes/auth')
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUI = require('swagger-ui-express')
 
-const username = 'oaloui';
-const password = 'cifkPeGzdJNvJ3ly';
-const cluster = 'cluster0.g1unz';
-const dbname = 'myFirstDatabase';
+PORT = process.env.PORT || 8000
+
+const options = {
+    definition: {
+        info: {
+            title: 'Library API',
+            version: '1.0.0',
+            description: 'A simple Express Library doc'
+        },
+        servers: [
+            {
+                url: `http//localhost:${PORT}`
+            }
+        ]
+    },
+    apis: ['./routes/*.js']
+}
+
+const specs = swaggerJsDoc(options)
+
 
 
 const app = express();
-
-
+// console.log(`mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`)
 mongoose.connect(
-    `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/${dbname}?retryWrites=true&w=majority`
+    `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@${process.env.CLUSTER_NAME}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
 ).then(() => {
     // Middleware
     app.use(express.json());
 
+    app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs))
+
     app.get('/', (req, res) => {
         res.send('Hello World');
     })
+
+    /**
+   * @swagger
+   * /api/users:
+   *   get:
+   *     description: Get all users
+   *     responses:
+   *       200:
+   *         description: Success
+   * 
+   */
+  app.get('/api/users', (req, res) => {
+    res.send()
+  });
+
+    //AUTH Middlewere
+    app.get('/api/user', authRoute);
+
     // Users
-    app.get('/users', userController.findUsers)
-    app.post('/users', userController.createUsers)
-    app.get('/users/:id', userController.findUser)
-    app.patch('/users/:id', userController.updateUser)
-    app.delete('/users/:id', userController.deleteUser)
+    app.get('/api/', userRoute)
+    app.post('/api/', userRoute)
+    app.patch('/api/', userRoute)
+    app.delete('/api/', userRoute)
 
-    // Rovers
-    app.get('/rovers', roverController.findRovers)
-    app.post('/rovers', roverController.createRovers)
-    app.get('/rovers/:id', roverController.findRovers)
-    app.patch('/rovers/:id', roverController.updateRover)
-    app.delete('/rovers/:id', roverController.deleteRover)
-
-    // Missions
-    app.get('/missions', missionController.findMissions)
-    app.post('/missions', missionController.createMissions)
-    app.get('/missions/:id', missionController.findMission)
-    app.patch('/missions/:id', missionController.updateMission)
-    app.delete('/missions/:id', missionController.deleteMission)
-    
-    
-    app.listen(8000, () => {
-        console.log("Server has started at port 8000");
+    app.listen(PORT, () => {
+        console.log(`Server has started at port ${PORT}`);
     })
 }).catch((error) => {
 
@@ -53,7 +74,7 @@ mongoose.connect(
         res.send('ERROR CONNECTION MONGO DB');
     })
 
-    app.listen(8000, () => {
-        console.log("Server has started at port 8000");
-    }) 
+    app.listen(PORT, () => {
+        console.log(`Server has started at port ${PORT}`);
+    })
 })
