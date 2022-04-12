@@ -1,99 +1,57 @@
-const verify = require('jsonwebtoken');
+const verify = require('./verifyToken');
 const User = require('../models/Users');
 const router = require('express').Router();
 const Joi = require('@hapi/joi')
+const { registerValidation } = require('../validation')
+const bcrypt = require('bcryptjs')
 
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       required:
- *         - email
- *         - pseudo
- *         - password
- *         - isAdmin
- *       properties:
- *         email:
- *           type: string
- *           description: The auto-generated id of the user
- *         pseudo:
- *           type: string
- *           description: The user description
- *         password:
- *           type: string
- *           description: The user description
- *         isAdmin:
- *           type: boolean
- *           description: The user description
- *       example:
- *         id: d5fE_asz
- *         title: The New Turing Omnibus
- *         author: Alexander K. Dewdney
- */
 
- /**
-  * @swagger
-  * tags:
-  *   name: Users
-  *   description: The books managing API
-  */
-
-/**
- * @swagger
- * /user:
- *   get:
- *     summary: Returns the list of all the users
- *     tags: [Users]
- *     responses:
- *       200:
- *         description: The list of the users
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- */
 
 // GET ALL USERS
 
-router.get('/users', async (req, res) => {
+router.get('/users',verify, async (req, res) => {
     const users = await User.find().select('-password');
     res.send(users);
-}
-)
+})
 
 // POST USERS
-router.post('/post', async (req, res) => {
-    const user = new User({
-        ...req.body,
-        isAdmin: false
-    });
+router.post('/register', async (req, res) => {
+    
 
-
-    const userSchema = {
-        email: Joi.string().required(),
-        pseudo: Joi.string().required(),
-        password: Joi.string().required()
-    }
-    const { error } = Joi.validate(req, res, userSchema)
+    const error = registerValidation(req.body)
     if (error) return res.status(400).send(error.details[0].message);
-    await user.save();
-    res.send(user);
+
+    // check if user already on db
+    const emailExist = await User.findOne({ email: req.body.email })
+    if (emailExist) return res.status(400).send('Email already exist');
+
+
+    // password hash
+    const salt = await bcrypt.genSalt(10);
+    const hashedPwd = await bcrypt.hash(req.body.password, salt);
+
+    const user = new User({
+        email: req.body.email,
+        pseudo: req.body.pseudo,
+        password: hashedPwd,
+        isAdmin: req.body.isAdmin
+    });
+    try {
+        await user.save();
+        res.send({
+            email: email,
+            pseudo: pseudo
+        });
+        
+    } catch (err) {
+        res.status(400).send(error)
+    }
 });
-// router.post('/users', async (req, res) => {
-//     const user = new User(req.body);
-//     await user.save();
-//     res.send(user);
-// }
-// )
 
 // GET USER BY ID 
 
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:id',verify,async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         res.send(user);
@@ -104,7 +62,7 @@ router.get('/users/:id', async (req, res) => {
 
 // UPDATE USER
 
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/:id',verify, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         Object.assign(user, req.body)
@@ -117,7 +75,7 @@ router.patch('/users/:id', async (req, res) => {
 
 // DELETE USER
 
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id',verify, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         await user.remove();
