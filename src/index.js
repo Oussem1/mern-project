@@ -41,6 +41,12 @@ const swaggerSpec = {
                 bearerAuth: [],
             },
         ],
+        tags : [
+            { name : "Login"},
+            { name : "User"},
+            { name : "Mission"},
+            { name : "Rover"},
+        ],
     },
     apis: [`${path.join(__dirname, "./routes/*js")}`]
 }
