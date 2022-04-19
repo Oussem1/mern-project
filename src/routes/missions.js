@@ -131,7 +131,7 @@ const verify = require('./verifyToken');
  */
 router.get('/missions', async (req, res) => {
   try {
-    const missions = await Mission.find().select(['-__v']);
+    const missions = await Mission.find().select(['-__v', '-userId']);
     res.send(missions);
   } catch (error) {
     res.status(400).send({ message: error });
@@ -157,7 +157,7 @@ router.get('/missions', async (req, res) => {
  */
 router.get('/mission/:id', async (req, res) => {
   try {
-    const mission = await Mission.findById(req.params.id).select(['-__v']);
+    const mission = await Mission.findById(req.params.id).select(['-__v', '-userId']);
     res.send(mission);
   } catch (error) {
     res.status(400).send({ message: error });

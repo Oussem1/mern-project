@@ -158,7 +158,7 @@ router.get('/rovers', async (req, res) => {
     }
 
     const rovers = await Rover.find()
-      .select(['-__v'])
+      .select(['-__v', '-userId'])
       .skip(offset)
       .limit(limit)
       .sort([[sortBy, sortQuery]])
@@ -192,7 +192,7 @@ router.get('/rovers', async (req, res) => {
  */
 router.get('/rover/:id', async (req, res) => {
   try {
-    const rover = await Rover.findById(req.params.id).select(['-__v']);
+    const rover = await Rover.findById(req.params.id).select(['-__v', '-userId']);
     res.send(rover);
   } catch (error) {
     res.status(400).send({ message: error });
@@ -271,7 +271,7 @@ router.patch('/rover/:id', verify, async (req, res) => {
  *      400:
  *       description: Bad Request    
  */
- router.delete('/rover/:id', verify, async (req, res) => {
+router.delete('/rover/:id', verify, async (req, res) => {
   const user = req.user
   if (user.isAdmin) {
     try {
